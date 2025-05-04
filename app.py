@@ -47,10 +47,10 @@ top_5_numbers = [
     (13, 1), (14, 1), (15, 1), (18, 1), (22, 1), (37, 1), (38, 1), (43, 1), (46, 1)
 ]
 
-# Define Lotto Number Generator function
+# Define the Lotto Number Generator function (updated for clarity)
 def generate_lotto_numbers(top_numbers, top_n=5):
     selected_numbers = random.choices(top_numbers[:top_n], k=5)
-    return sorted(selected_numbers)
+    return sorted([num[0] for num in selected_numbers])
 
 # Add Streamlit sidebar for Lotto Number Generation
 st.sidebar.title('Lotto Number Generator')
@@ -148,14 +148,16 @@ def select_with_pairs(pool, used_pairs):
     
     return sorted(list(numbers))
 
-# Generate Powerball numbers based on user input
-def generate_powerball_numbers():
-    pool = build_number_pool()
-    powerball_numbers = []
-    for _ in range(num_predictions):
-        powerball_numbers.append(select_with_pairs(pool, used_pairs=None))
-    return powerball_numbers
+# Display the predictions (6 numbers each for Powerball)
+def generate_final_predictions():
+    powerball_predictions = generate_powerball_numbers()
+    final_predictions = []
+    for prediction in powerball_predictions:
+        # Choose 5 main numbers and 1 powerball
+        final_predictions.append(sorted(prediction)[:5] + [random.choice(range(1, 21))])  # Powerball range is from 1-20
+    return final_predictions
 
-# Display the predictions
-powerball_predictions = generate_powerball_numbers()
-st.write(f"Generated Powerball Predictions: {powerball_predictions}")
+# Generate and display final Powerball predictions
+final_predictions = generate_final_predictions()
+st.write(f"Generated Powerball Predictions (6 Numbers Each):")
+st.write(final_predictions)

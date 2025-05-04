@@ -1,6 +1,7 @@
 import random
 import streamlit as st
 import matplotlib.pyplot as plt
+import networkx as nx
 
 # Simulated frequency data (replace with real stats)
 top_100_numbers = [

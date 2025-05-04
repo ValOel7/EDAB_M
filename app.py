@@ -110,6 +110,18 @@ pool = build_pool()
 for _ in range(num_predictions):
     predictions.append(generate_prediction(pool))
 
+# Boosting
+boosted_numbers = list(top_numbers)
+if boost_common_pairs:
+    for a, b in common_pairs:
+        if a in boosted_numbers: boosted_numbers.append(a)
+        if b in boosted_numbers: boosted_numbers.append(b)
+
+if boost_consecutive_pairs:
+    for a, b in consecutive_pairs:
+        if a in boosted_numbers: boosted_numbers.append(a)
+        if b in boosted_numbers: boosted_numbers.append(b)
+
 # Display results
 st.title("🎯 Lotto / Powerball Number Generator")
 st.subheader(f"Strategy: {selection}")

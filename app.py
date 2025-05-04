@@ -116,3 +116,33 @@ for i, prediction in enumerate(predictions, 1):
     main = prediction[:5]
     pb = prediction[5]
     st.write(f"Prediction {i}: {main} + Powerball: {pb}")
+# Visual Ball Graph
+st.subheader("🔗 Ball Relationship Graph")
+
+# Create NetworkX graph
+G = nx.Graph()
+
+# Add nodes
+unique_numbers = set(boosted_numbers)
+G.add_nodes_from(unique_numbers)
+
+# Add edges from boosted pairs
+if boost_common_pairs:
+    for a, b in common_pairs:
+        if a in unique_numbers and b in unique_numbers:
+            G.add_edge(a, b, weight=3)
+
+if boost_consecutive_pairs:
+    for a, b in consecutive_pairs:
+        if a in unique_numbers and b in unique_numbers:
+            if G.has_edge(a, b):
+                G[a][b]['weight'] += 1
+            else:
+                G.add_edge(a, b, weight=2)
+
+# Draw graph
+pos = nx.spring_layout(G, seed=42)
+weights = [G[u][v]['weight'] for u, v in G.edges()]
+fig, ax = plt.subplots(figsize=(10, 6))
+nx.draw(G, pos, with_labels=True, node_color="skyblue", edge_color="gray", width=weights, ax=ax)
+st.pyplot(fig)

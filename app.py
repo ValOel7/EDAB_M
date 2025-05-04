@@ -1,14 +1,7 @@
 import random
 import streamlit as st
-import networkx as nx
-import matplotlib.pyplot as plt
 
-# -------------------------------
-# Lotto Number Generator Function
-# -------------------------------
-
-# Sample data for top 5, top 10, etc.
-# Define the top 100, 50, 20, 10, and 5 draw numbers with their frequencies
+# Simulated frequency data (replace with real stats)
 top_100_numbers = [
     (23, 16), (40, 15), (49, 15), (12, 14), (32, 14), (38, 14), (43, 14), (2, 13),
     (5, 13), (6, 13), (9, 13), (22, 13), (37, 13), (39, 13), (42, 13), (3, 12),
@@ -47,117 +40,79 @@ top_5_numbers = [
     (13, 1), (14, 1), (15, 1), (18, 1), (22, 1), (37, 1), (38, 1), (43, 1), (46, 1)
 ]
 
-# Define the Lotto Number Generator function (updated for clarity)
-def generate_lotto_numbers(top_numbers, top_n=5):
-    selected_numbers = random.choices(top_numbers[:top_n], k=5)
-    return sorted([num[0] for num in selected_numbers])
-
-# Add Streamlit sidebar for Lotto Number Generation
-st.sidebar.title('Lotto Number Generator')
-selection = st.sidebar.selectbox('Select Top N Draw Numbers Strategy', ('Top 5', 'Top 10', 'Top 20', 'Top 50', 'Top 100'))
-
-# Select strategy based on user input
-top_numbers = top_5_numbers  # default
-if selection == 'Top 5':
-    top_numbers = top_5_numbers
-elif selection == 'Top 10':
-    top_numbers = top_10_numbers
-elif selection == 'Top 20':
-    top_numbers = top_20_numbers
-elif selection == 'Top 50':
-    top_numbers = top_50_numbers
-else:
-    top_numbers = top_100_numbers
-
-# Generate Lotto numbers
-generated_numbers = generate_lotto_numbers(top_numbers)
-st.write(f"Generated Lotto Numbers for {selection}: {generated_numbers}")
-
-# Generate Network Graph for Lotto Frequencies
-frequencies = [item[1] for item in top_numbers]
-numbers = [item[0] for item in top_numbers]
-G = nx.Graph()
-for i in range(len(numbers)):
-    G.add_node(numbers[i], size=frequencies[i])
-
-# Draw Network Graph
-plt.figure(figsize=(10, 6))
-nx.draw(G, with_labels=True, node_size=[G.nodes[n]['size'] * 100 for n in G.nodes], node_color='skyblue', font_size=12)
-plt.title(f"Frequency of Lotto Numbers - {selection}")
-st.pyplot(plt)
-
-# -------------------------------
-# Powerball Predictor
-# -------------------------------
-
-st.title("Powerball Predictor")
-st.markdown("Generate Powerball number predictions using historical frequency, hot/cold patterns, and most common pairs. Choose the bias you want to implement on the left, and the predictions will be displayed below.")
-
-# Historical Frequency-Based Datasets for Powerball
-hot_numbers = {
-    15: 91, 3: 89, 49: 87, 38: 86, 13: 84, 2: 48
-}
-
 cold_numbers = {31, 10, 4, 26, 49, 20}
 least_frequent_numbers = {26, 1, 14, 23, 33, 20}
+common_pairs = {(19, 24), (15, 24), (24, 38), (19, 49), (3, 40)}
+consecutive_pairs = {(19, 20), (9, 10), (48, 49), (10, 11), (12, 13)}
 
-common_pairs = {
-    (19, 24): 16, (15, 24): 15, (24, 38): 14, (19, 49): 13, (3, 40): 13
-}
-
-consecutive_pairs = {
-    (19, 20): 12, (9, 10): 12, (48, 49): 11, (10, 11): 11, (12, 13): 10
-}
-
-# Sidebar for Powerball Settings
-st.sidebar.header("🎛️ Prediction Settings")
-num_predictions = st.sidebar.slider("Number of predictions", 1, 10, 5)
+# Streamlit sidebar
+st.sidebar.title('Lotto/Powerball Predictor Settings')
+selection = st.sidebar.selectbox('Lotto Strategy', ('Top 5', 'Top 10', 'Top 20', 'Top 50', 'Top 100'))
+num_predictions = st.sidebar.slider("How many predictions?", 1, 10, 5)
 exclude_cold = st.sidebar.checkbox("Exclude Cold Numbers", value=True)
 exclude_least = st.sidebar.checkbox("Exclude Least Frequent Numbers", value=True)
-boost_common_pairs = st.sidebar.checkbox("Emphasize Common Pairs", value=True)
-boost_consecutive_pairs = st.sidebar.checkbox("Emphasize Consecutive Pairs", value=False)
-include_powerball = st.sidebar.checkbox("Include Powerball", value=True)
+boost_common_pairs = st.sidebar.checkbox("Boost Common Pairs", value=True)
+boost_consecutive_pairs = st.sidebar.checkbox("Boost Consecutive Pairs", value=False)
 
-# ------------------------
-# Helper Functions for Powerball
-# ------------------------
+# Strategy selector
+strategy_map = {
+    'Top 5': top_5_numbers,
+    'Top 10': top_10_numbers,
+    'Top 20': top_20_numbers,
+    'Top 50': top_50_numbers,
+    'Top 100': top_100_numbers,
+}
+top_numbers = strategy_map[selection]
 
-def build_number_pool():
+# Build weighted pool
+def build_pool():
     pool = []
-    for number in range(1, 51):
-        if exclude_cold and number in cold_numbers:
+    for num, freq in top_numbers:
+        if exclude_cold and num in cold_numbers:
             continue
-        if exclude_least and number in least_frequent_numbers:
+        if exclude_least and num in least_frequent_numbers:
             continue
-        weight = hot_numbers.get(number, 1)
-        pool.extend([number] * weight)
-    return pool
+        pool.extend([num] * freq)
+    return list(set(pool))  # remove duplicates for sampling
 
-def select_with_pairs(pool, used_pairs):
-    numbers = set()
-    if boost_common_pairs and common_pairs:
-        pair = random.choice(list(common_pairs.keys()))
-        numbers.update(pair)
+# Generate a single prediction
+def generate_prediction(pool):
+    prediction = set()
 
-    if boost_consecutive_pairs and consecutive_pairs:
-        pair = random.choice(list(consecutive_pairs.keys()))
-        numbers.update(pair)
+    # Add boosted pairs (ensuring enough space remains for unique numbers)
+    if boost_common_pairs and len(prediction) <= 3:
+        pair = random.choice(list(common_pairs))
+        prediction.update(pair)
 
-    while len(numbers) < 5:
-        numbers.add(random.choice(pool))
-    
-    return sorted(list(numbers))
+    if boost_consecutive_pairs and len(prediction) <= 3:
+        pair = random.choice(list(consecutive_pairs))
+        prediction.update(pair)
 
-# Display the predictions (6 numbers each for Powerball)
-def generate_final_predictions():
-    powerball_predictions = generate_powerball_numbers()
-    final_predictions = []
-    for prediction in powerball_predictions:
-        # Choose 5 main numbers and 1 powerball
-        final_predictions.append(sorted(prediction)[:5] + [random.choice(range(1, 21))])  # Powerball range is from 1-20
-    return final_predictions
+    # Fill remaining spots with unique numbers
+    remaining = 5 - len(prediction)
+    available_pool = list(set(pool) - prediction)
+    if len(available_pool) < remaining:
+        # fallback: fill from full pool
+        available_pool = list(set(pool))
 
-# Generate and display final Powerball predictions
-final_predictions = generate_final_predictions()
-st.write(f"Generated Powerball Predictions (6 Numbers Each):")
-st.write(final_predictions)
+    prediction.update(random.sample(available_pool, remaining))
+
+    main_numbers = sorted(prediction)
+    powerball = random.randint(1, 20)
+
+    return main_numbers + [powerball]
+
+# Generate all predictions
+predictions = []
+pool = build_pool()
+for _ in range(num_predictions):
+    predictions.append(generate_prediction(pool))
+
+# Display results
+st.title("🎯 Lotto / Powerball Number Generator")
+st.subheader(f"Strategy: {selection}")
+st.write(f"Generated {num_predictions} Prediction(s):")
+for i, prediction in enumerate(predictions, 1):
+    main = prediction[:5]
+    pb = prediction[5]
+    st.write(f"Prediction {i}: {main} + Powerball: {pb}")

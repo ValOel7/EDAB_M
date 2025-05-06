@@ -123,16 +123,19 @@ if boost_consecutive_pairs:
         if b in boosted_numbers: boosted_numbers.append(b)
 
 # Display results
-st.title("Powerball Generator")
-st.write("This is a Powerball Lucky numbers simulator - you can select from various strategies to base your number selection on. This simulator was built on past data from the following website https://www.lotteryextreme.com/south_africa/powerball-hot_and_cold_numbers, encapsulating the past 100 draws up until the 4th of May 2025.")
-st.subheader(f"Strategy: {selection}")
+st.title("Powerball Lucky Number Generator")
+st.write("This is a Powerball Lucky number generator - you can select from various strategies to base your bias on. This simulator was built on past data from the following website https://www.lotteryextreme.com/south_africa/powerball-hot_and_cold_numbers, encapsulating the past 100 draws up until the 4th of May 2025. The Powerball selection is based on the first 5 numbers being a number between 1 to 50 and the Powerball number(6th) is a number between 1 to 20.")
+st.subheader(f"The Strategy you chose is: {selection}")
 st.write(f"Generated {num_predictions} Prediction(s):")
+st.write("The following sequences have been provided based on your strategy:")
 for i, prediction in enumerate(predictions, 1):
     main = prediction[:5]
     pb = prediction[5]
     st.write(f"Prediction {i}: {main} + Powerball: {pb}")
+    
 # Visual Ball Graph
-st.subheader("🔗 Ball Relationship Graph")
+st.subheader("Ball Relationship Graph")
+st.write("The following graph has been generated showing the Number of the ball - as well as the frequency that the ball has been been played within the past {num_predictions} draws: ")
 
 # Create NetworkX graph
 G = nx.Graph()

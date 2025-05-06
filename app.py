@@ -123,7 +123,7 @@ if boost_consecutive_pairs:
         if b in boosted_numbers: boosted_numbers.append(b)
 
 # Display results
-st.title("Powerball Lucky Number Generator")
+st.markdown("<h1 style='text-align: center; font-weight: bold;'>Powerball Number Generator</h1>", unsafe_allow_html=True)
 # Display the image
 
 from PIL import Image

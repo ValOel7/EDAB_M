@@ -125,7 +125,7 @@ if boost_consecutive_pairs:
 # Display results
 st.title("Powerball Lucky Number Generator")
 # Display the image
-st.image("istockphoto-2058104316-1024x1024.jpg", use_column_width=True)
+st.image("images/istockphoto-2058104316-1024x1024.jpg")
 st.write("This is a Powerball Lucky number generator - you can select from various strategies to base your bias on. This simulator was built on past data from the following website https://www.lotteryextreme.com/south_africa/powerball-hot_and_cold_numbers, encapsulating the past 100 draws up until the 4th of May 2025. The Powerball selection is based on the first 5 numbers being a number between 1 to 50 and the Powerball number(6th) is a number between 1 to 20.")
 st.subheader(f"The Strategy you chose is: {selection}")
 st.write(f"Generated {num_predictions} Prediction(s):")

@@ -3,7 +3,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import networkx as nx
 
-# Simulated frequency data (replace with real stats)
+# Powerball results for the past n number of draws based on the following website https://www.lotteryextreme.com/south_africa/powerball-hot_and_cold_numbers, based 4th of May 2025
 top_100_numbers = [
     (23, 16), (40, 15), (49, 15), (12, 14), (32, 14), (38, 14), (43, 14), (2, 13),
     (5, 13), (6, 13), (9, 13), (22, 13), (37, 13), (39, 13), (42, 13), (3, 12),
@@ -48,13 +48,13 @@ common_pairs = {(19, 24), (15, 24), (24, 38), (19, 49), (3, 40)}
 consecutive_pairs = {(19, 20), (9, 10), (48, 49), (10, 11), (12, 13)}
 
 # Streamlit sidebar
-st.sidebar.title('Lotto/Powerball Predictor Settings')
-selection = st.sidebar.selectbox('Lotto Strategy', ('Top 5', 'Top 10', 'Top 20', 'Top 50', 'Top 100'))
+st.sidebar.title('Powerball Predictor Settings')
+selection = st.sidebar.selectbox('Powerball Strategy', ('Top 5', 'Top 10', 'Top 20', 'Top 50', 'Top 100'))
 num_predictions = st.sidebar.slider("How many predictions?", 1, 10, 5)
 exclude_cold = st.sidebar.checkbox("Exclude Cold Numbers", value=True)
 exclude_least = st.sidebar.checkbox("Exclude Least Frequent Numbers", value=True)
-boost_common_pairs = st.sidebar.checkbox("Boost Common Pairs", value=True)
-boost_consecutive_pairs = st.sidebar.checkbox("Boost Consecutive Pairs", value=False)
+boost_common_pairs = st.sidebar.checkbox("Include Common Pairs", value=True)
+boost_consecutive_pairs = st.sidebar.checkbox("Include Consecutive Pairs", value=False)
 
 # Strategy selector
 strategy_map = {
@@ -123,7 +123,8 @@ if boost_consecutive_pairs:
         if b in boosted_numbers: boosted_numbers.append(b)
 
 # Display results
-st.title("🎯 Lotto / Powerball Number Generator")
+st.title("Powerball Generator")
+st.write("This is a Powerball Lucky numbers simulator - you can select from various strategies to base your number selection on. This simulator was built on past data from the following website https://www.lotteryextreme.com/south_africa/powerball-hot_and_cold_numbers, encapsulating the past 100 draws up until the 4th of May 2025.")
 st.subheader(f"Strategy: {selection}")
 st.write(f"Generated {num_predictions} Prediction(s):")
 for i, prediction in enumerate(predictions, 1):

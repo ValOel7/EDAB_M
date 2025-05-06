@@ -135,7 +135,7 @@ for i, prediction in enumerate(predictions, 1):
     
 # Visual Ball Graph
 st.subheader("Ball Relationship Graph")
-st.write("The following graph has been generated showing the Number of the ball - as well as the frequency that the ball has been been played within the past {num_predictions} draws: ")
+st.write("The following graph has been generated showing the Number of the ball - as well as the frequency that the ball has been been played within the past draws: ")
 
 # Create NetworkX graph
 G = nx.Graph()

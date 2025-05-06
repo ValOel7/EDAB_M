@@ -128,7 +128,7 @@ st.title("Powerball Lucky Number Generator")
 
 from PIL import Image
 try:
-    img = Image.open("images/istockphoto-2058104316-1024x1024.jpg")
+    img = Image.open("istockphoto-2058104316-1024x1024.jpg")
     st.image(img)
 except FileNotFoundError:
     st.error("Image not found. Please check the file path.")
